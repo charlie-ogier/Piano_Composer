@@ -1,0 +1,16 @@
+' Gambas class file
+
+Public sData As String                                              'To store the data
+
+Public Sub Form_Open()                                              'Form opens..
+
+Me.x = 0                                                            'Set the position of the form on the desktop
+Me.y = 0                                                            'Set the position of the form on the desktop
+
+End
+
+Public Sub Timer1_Timer()                                           'Timer to keep the data updated
+
+TextAreaCSV.text = sData                                            'Put the data on the TextArea
+
+End

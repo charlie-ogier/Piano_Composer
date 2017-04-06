@@ -1,0 +1,7 @@
+' Gambas class file
+
+Public Sub ButtonDone_Click()                                       'What to do when the 'Done' button is clicked
+
+Me.close                                                            'Close the form
+
+End

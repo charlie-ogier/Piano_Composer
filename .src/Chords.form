@@ -1,0 +1,17 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Text = ("Chords list")
+  Arrangement = Arrange.Fill
+  { TextAreaCSV TextArea
+    MoveScaled(23,13,11,14)
+    Expand = True
+    ReadOnly = True
+  }
+  { Timer1 #Timer
+    #MoveScaled(49,39)
+    Enabled = True
+    Delay = 250
+  }
+}

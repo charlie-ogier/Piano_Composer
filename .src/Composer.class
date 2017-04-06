@@ -1,0 +1,348 @@
+' Gambas class file
+
+'06/04/2017 Added a drawing of a stave with note position to aid note selection
+
+Public Sub Form_Show()                                                        'Let's go!
+Dim sTemp As String                                                           'Temp string
+Application.MainWindow = Me                                                   'Make sure all windows close when this window does
+
+For Each sTemp In Dir("../Piano/", "*.wav")                                   'For each note..
+  If Not Exist("/tmp" &/ sTemp) Then                                          'If it does not exist then..
+    Copy "../Piano/" &/ sTemp To "/tmp" &/ sTemp                              'Copy to the /tmp folder
+  End If
+Next
+
+For Each sTemp In Dir("../newnotes/", "*.wav")                                'For each note..
+  If Not Exist("/tmp" &/ sTemp) Then                                          'If it does not exist then..
+    Copy "../newnotes/" &/ sTemp To "/tmp" &/ sTemp                           'Copy to the /tmp folder
+  End If
+Next
+
+LabelVersion.text = "Version 0.2.0"                                           'Display the version number
+
+BuildPiano                                                                    'Build the piano keyboard
+
+End
+
+Public Sub PianoKeys_Enter()                                                  'When the mouse moves over a key. sNotes are all the notes
+Dim sNotes2 As String[] = ["0A.wav", "0A#.wav", "0B.wav", "0C.wav", "0C#.wav", "0D.wav", "0D#.wav", "0E.wav", "0F.wav", "0F#.wav", "0G.wav", "0G#.wav", "1A.wav", "1A#.wav", "1B.wav", "1C.wav", "1C#.wav", "1D.wav", "1D#.wav", "1E.wav", "1F.wav", "1F#.wav", "1G.wav", "1G#.wav", "2A.wav", "2A#.wav", "2B.wav", "2C.wav", "2C#.wav", "2D.wav", "2D#.wav", "2E.wav", "2F.wav", "2F#.wav", "2G.wav", "2G#.wav", "3A.wav", "3A#.wav", "3B.wav", "3C.wav", "3C#.wav", "3D.wav", "3D#.wav", "3E.wav", "3F.wav", "3F#.wav", "3G.wav", "3G#.wav", "4A.wav", "4A#.wav", "4B.wav", "4C.wav", "4C#.wav", "4D.wav", "4D#.wav", "4E.wav", "4F.wav", "4F#.wav", "4G.wav", "4G#.wav", "5A.wav"]
+Dim sNote As String                                                           'Note to work on
+
+LabelEnter.text = sNotes2[Last.Tag - 16]                                      'Display note in a Label
+sNote = Left(sNotes2[Last.Tag - 16], InStr(sNotes2[Last.Tag - 16], ".") - 1)  'sNote becomes the note without the '.wav'
+
+Stave(sNote)                                                                  'Send the note to 'Stave'
+
+End
+
+Public Sub Stave(sNote As String)                                             'To draw a stave with the note the mouse is over. sNotes2 stores the Notes names and siPos stores the note position on the drawing
+Dim sNotes2 As String[] = ["0A", "0A#", "0B", "0C", "0C#", "0D", "0D#", "0E", "0F", "0F#", "0G", "0G#", "1A", "1A#", "1B", "1C", "1C#", "1D", "1D#", "1E", "1F", "1F#", "1G", "1G#", "2A", "2A#", "2B", "2C", "2C#", "2D", "2D#", "2E", "2F", "2F#", "2G", "2G#", "3A", "3A#", "3B", "3C", "3C#", "3D", "3D#", "3E", "3F", "3F#", "3G", "3G#", "4A", "4A#", "4B", "4C", "4C#", "4D", "4D#", "4E", "4F", "4F#", "4G", "4G#", "5A"]
+Dim siPos As Short[] = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 60, 55, 55, 50, 50, 45, 45, 40, 35, 35, 30, 30, 25, 20, 20, 15, 15, 10, 10, 5, 60, 60, 55, 55, 50, 45, 45, 40, 40, 35, 35, 30, 25, 25, 20, 20, 15, 10, 10, 5, 5, -1]
+Dim siCount, siActualPOS, siSharp1, siSharp2 As Short                         'Various counters
+Dim fPosY As Float                                                            'Y position for the drawing
+Dim sPicture As String = "treble.png"                                         'Display the Treble Clef
+Dim siLoopCounter As Short = 5                                                'Loop counter for the 5 lines of the musical stave
+
+For siCount = 0 To 60                                                         'For each item in the sNotes2 array
+  If InStr(sNotes2[siCount], sNote) And siCount < 39 Then                     'If there is a match and the count is less that 39 (i.e. below Middle 'C') then
+    sPicture = "bass.png"                                                     'Change the picture to the Bass Clef
+  End If
+  If sNotes2[siCount] = sNote Then siActualPOS = siPos[siCount]               'Find the postion of the note in the array
+Next
+
+If siActualPOS = 60 Then siLoopCounter = 6                                    'If Middle C then we need to add an extra line to the drawing
+
+DrawingArea1.Clear                                                            'Clear the Drawing Area
+
+If siActualPOS = -1 Then                                                      'If the note is so low or high that the drawing can't display it then..
+  DrawingArea1.Background = Color.Background                                  'Change the BackGround colour
+  PictureBox1.Picture = Null                                                  'Hide the Clef
+  Return                                                                      'Get out of here
+End If 
+
+DrawingArea1.Background = Color.White                                         'Set the Drawing Area colour to White
+
+Paint.Begin(DrawingArea1)                                                     'Begin drawing
+
+PictureBox1.Picture = Picture.Load(sPicture)                                  'Load the Bass or Teble Clef image
+
+Paint.Brush = Paint.Color(Color.Black)                                        'Set the paint brush to black
+
+fPosY = 10                                                                    'Set the start Y position of the drawing
+For siCount = 1 To siLoopCounter                                              'Loop for each line required in the drawing
+  Paint.LineWidth = 2                                                         'Set the Line Width to 2
+  If siCount = 6 Then                                                         'If Middle C then..
+    Paint.MoveTo(25, fPosY)                                                   'Position the brush
+    Paint.RelLineTo(20, 0)                                                    'Set the dimensions of the 6th line
+  Else                                                                        'Else
+    Paint.MoveTo(10, fPosY)                                                   'Position the brush
+    Paint.RelLineTo(50, 0)                                                    'Set the dimensions of a line
+  Endif
+  Paint.Stroke                                                                'Draw the line
+  fPosY += 10                                                                 'Increase the Y position for the next line
+Next
+
+siSharp1 = 45                                                                 'Set the Sharp (#) postions
+siSharp2 = 10                                                                 'Set the Sharp (#) postions
+
+Paint.Arc(35, siActualPOS, 5)                                                 'Draw a circle (The note)
+Paint.Fill                                                                    'Then fill it 
+
+If InStr(sNote, "#") Then                                                     'If this note is a sharp(#)
+  Paint.moveto(siSharp1, siActualPOS)                                         'Move the brush
+  Paint.RelLineTo(15, -5)                                                     'Draw a line relative to the brush position
+   
+  Paint.moveto(siSharp1, siActualPOS + siSharp2)                              'Move the brush
+  Paint.RelLineTo(15, -5)                                                     'Draw a line relative to the brush position
+  
+  Paint.moveto(siSharp1 + 5, siActualPOS - siSharp2)                          'Move the brush
+  Paint.RelLineTo(0, 28)                                                      'Draw a line relative to the brush position
+  
+  Paint.moveto(siSharp1 + 10, siActualPOS - siSharp2)                         'Move the brush
+  Paint.RelLineTo(0, 28)                                                      'Draw a line relative to the brush position
+  
+  Paint.Stroke                                                                'Draw the lines
+End If 
+
+Paint.End
+
+End
+
+Public Sub PianoKeys_MouseDown()                                              'If the mouse is clicked over the keyboard
+Dim sNotes2 As String[] = ["0A.wav", "0A#.wav", "0B.wav", "0C.wav", "0C#.wav", "0D.wav", "0D#.wav", "0E.wav", "0F.wav", "0F#.wav", "0G.wav", "0G#.wav", "1A.wav", "1A#.wav", "1B.wav", "1C.wav", "1C#.wav", "1D.wav", "1D#.wav", "1E.wav", "1F.wav", "1F#.wav", "1G.wav", "1G#.wav", "2A.wav", "2A#.wav", "2B.wav", "2C.wav", "2C#.wav", "2D.wav", "2D#.wav", "2E.wav", "2F.wav", "2F#.wav", "2G.wav", "2G#.wav", "3A.wav", "3A#.wav", "3B.wav", "3C.wav", "3C#.wav", "3D.wav", "3D#.wav", "3E.wav", "3F.wav", "3F#.wav", "3G.wav", "3G#.wav", "4A.wav", "4A#.wav", "4B.wav", "4C.wav", "4C#.wav", "4D.wav", "4D#.wav", "4E.wav", "4F.wav", "4F#.wav", "4G.wav", "4G#.wav", "5A.wav"]
+
+Music.load("/tmp" &/ Last.Tag & ".wav")                                       'Load the correct note to play
+LabelNote.Text = Last.Tag & ".wav"                                            'Display the music file played
+LabelNote2.text = sNotes2[Last.tag - 16]                                      'Display newnote clasification e.g. 2C#
+If PanelRecord.Visible = True Then                                            'If the record panel is visble then you are recording so..
+  TextBoxString.text &= Replace(LabelNote2.text, ".wav", ", ")                'Add the note to the list
+End If
+Music.Play                                                                    'Play the note
+
+End
+
+Public Sub BuildPiano()                                                       'Routine to build the piano keyboard
+Dim sOctave As String[] = ["L0-", "L1-", "M0-", "H0-", "H1-"]                 'Octave names
+Dim sNote As String[] = ["A", "B", "C", "D", "E", "F", "G"]                   'Note names
+Dim hNewPanelWhite, hNewPanelBlack As Panel                                   'Panels for the keys
+Dim hHBox As HBox                                                             'HBox to put all the keys in
+Dim siCount, siCount1 As Short                                                'Counters
+Dim siTag As Short = 15                                                       'To create the 'key's' tag 
+
+With Me                                                                       'Setup the Form 
+  .Arrangement = Arrange.Vertical                                             'Set the Arrangemant
+  .Background = Color.Background                                              'Set the Background
+End With
+
+hHBox = New HBox(Me)                                                          'Create a new HBox on the Form
+hHBox.Height = 112                                                            'Set its height
+
+For siCount1 = 0 To 4                                                         'Loop for each of the 5 octaves
+  For siCount = 0 To 6                                                        'Loop for each of the 7 white keys in the octave
+    Inc siTag                                                                 'Increase the value of siTag
+    hNewPanelWhite = New Panel(hHBox) As "PianoKeys"                          'Create a new Panel (Group name = "PianoKeys")
+    With hNewPanelWhite                                                       'With the new Panel
+      .Width = 21                                                             'Set the Width
+      .Height = 112                                                           'Set the Height
+      .Name = sOctave[siCount1] & sNote[siCount]                              'Give it a name based on the octave and note it will become
+      .Background = Color.White                                               'Make the key white
+      .Border = Border.Plain                                                  'Give it a plain border
+      .Tag = siTag                                                            'Give it a Tag (This tag is the value of the note that will be played. e.g. 17 will play '17.wav')
+    End With
+    
+    Select Case Right(hNewPanelWhite.Name, 1)                                 'Select what to do based on the 'Note' the last 'key' created is
+      Case "C", "F"                                                           'If it's C or F then
+        hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"             'Add a new (Black) Panel inside the (White) Panel 
+        With hNewPanelBlack                                                   'With the new Black panel
+          .Name = sOctave[siCount1] & sNote[siCount] & "#"                    'Give it the same name as the White key but add '#'
+          .Tag = siTag + 1                                                    'Add a tag one value higher than the white key
+          .Width = 7                                                          'Set the width
+          .Height = 63                                                        'Set the height
+          .Background = Color.Black                                           'Set the colour
+          .x &= 14                                                            'Move it from top left of the white key by 14
+        End With
+        Inc siTag                                                             'Increase the Tag value
+        
+      Case "D", "G", "A"                                                      'If it's D, G or A then
+        If siTag <> 16 Then                                                   'If it is not the first key then
+          hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"           'Add a new (Black) Panel inside the (White) Panel 
+          With hNewPanelBlack                                                 'With the new Black panel
+            .Name = sOctave[siCount1] & sNote[siCount] & "#"                  'Give it the same name as the White key but add '#'
+            .Tag = siTag - 1                                                  'This is half a black key on the left of the White key so its value is 1 less that the present key value
+            .Width = 7                                                        'Set the width
+            .Height = 63                                                      'Set the height
+            .Background = Color.Black                                         'Set the colour
+          End With
+        End If
+        hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"             'Add a new (Black) Panel inside the (White) Panel 
+        With hNewPanelBlack                                                   'With the new Black panel
+          .Name = sOctave[siCount1] & sNote[siCount] & "#"                    'Give it the same name as the White key but add '#'
+          .Tag = siTag + 1                                                    'This is half a black key on the right of the White key so its value is 1 greater that the present key value
+          .Width = 7                                                          'Set the Width
+          .Height = 63                                                        'Set the Height
+          .Background = Color.Black                                           'Set the colour
+          .x &= 14                                                            'Move it from top left of the white key by 14
+        End With
+        Inc siTag                                                             'Increase the Tag value
+        
+      Case "E", "B"                                                           'If it's E or B then
+        hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"             'Add a new (Black) Panel inside the (White) Panel 
+        With hNewPanelBlack                                                   'With the new Black panel
+          .Name = sOctave[siCount1] & sNote[siCount] & "#"                    'Give it the same name as the White key but add '#'
+          .Tag = siTag - 1                                                    'This is half a black key on the left of the White key so its value is 1 less that the present key value
+          .Width = 7                                                          'Set the Width
+          .Height = 63                                                        'Set the Height
+          .Background = Color.Black                                           'Set the colour
+        End With
+        
+      Case "F"                                                                'If it's F then
+        hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"             'Add a new (Black) Panel inside the (White) Panel 
+        With hNewPanelBlack                                                   'With the new Black panel
+          .Name = sOctave[siCount1] & sNote[siCount] & "#"                    'Give it the same name as the White key but add '#'
+          .Tag = siTag + 1                                                    'This is half a black key on the right of the White key so its value is 1 greater that the present key value
+          .Width = 7                                                          'Set the Width
+          .Height = 63                                                        'Set the Height
+          .Background = Color.Black                                           'Set the colour
+          .x &= 14                                                            'Move it from top left of the white key by 14
+        End With
+        Inc siTag                                                             'Increase the Tag value
+    End Select
+  Next
+Next
+
+hNewPanelWhite = New Panel(hHBox) As "PianoKeys"                              'This is to create the last 'A' key on the keyboard
+  With hNewPanelWhite                                                         'With the new Panel
+    .Width = 21                                                               'Set the Width
+    .Height = 112                                                             'Set the height
+    .Name = "H2-A"                                                            'Give it a name
+    .Background = Color.White                                                 'Set the colour
+    .Border = Border.Plain                                                    'Set the border
+    .Tag = 76                                                                 'Give it a Tag
+  End With
+
+hNewPanelBlack = New Panel(hNewPanelWhite) As "PianoKeys"                     'Create the last black key 'G#' on the keyboard
+  With hNewPanelBlack                                                         'With the new Black panel
+    .Tag = 75                                                                 'Set the Tag
+    .Width = 7                                                                'Set the Width
+    .Height = 63                                                              'Set the Height
+    .Background = Color.Black                                                 'Set the colour
+ End With
+
+End
+
+Public Sub ButtonAbout_Click()                                                'If the 'About' button is clicked
+
+About.Show                                                                    'Show the 'About' form
+
+End
+
+Public Sub ButtonStartChord_Click()                                           'The Start Chord button is clicked 
+
+PanelRecord.Visible = True                                                    'Show the record channel
+PictureBoxNote.Visible = True                                                 'Show the PictureBox 
+Chords.Show                                                                   'Show the Chords form
+Me.SetFocus                                                                   'Get the focus back here!
+ComboboxTime_Click                                                            'Run this routine to set the Picture in the PictureBox
+
+End
+
+Public Sub ButtonClear_Click()                                                'The Clear button is clicked
+
+TextBoxString.text = ""                                                       'Clear the Label of text
+
+End
+
+Public Sub ButtonCancel_Click(Optional bSkip As Boolean)                      'The Cancel button is clicked or this routine is called
+Dim siAnswer As Short                                                         'To hold the answer
+
+If Not bSkip Then                                                             'If the button was clicked then
+  siAnswer = Message.Question("Are you sure?", "No", "Yes")                   'What do you want to do
+Else                                                                          'Else the routine was called with bSkip set..
+  siAnswer = 2                                                                'The answer is '2'
+End If
+
+If siAnswer = 2 Then                                                          'If the answer is 2 then (you want out!)..
+  TextBoxString.text = ""                                                     'Clear the Label
+  Chords.Close                                                                'Close the Chords window
+  PanelRecord.Visible = False                                                 'Hide the Recording panel
+  PictureBoxNote.Visible = False                                              'Hide the PictureBox
+End If
+
+End
+
+Public Sub ButtonSave_Click()                                                 'The Save button is clicked
+Dim sSaveData As String = Chords.sData                                        'Get the data from the Chords window
+Dim siAnswer As Short                                                         'To hold the answer
+Dim sFileToAppend As String                                                   'String to hold data when apending a file
+
+Chords.Close                                                                  'Close the Chords window
+siAnswer = Message.Question("Are you creating a 'New' file or 'Appending' an exsiting file?", "New", "Append", "Cancel") 'What do you want to do?
+
+If siAnswer = 1 Then                                                          'If the answer is 'New' then
+  Dialog.Filter = ["*.csv", "CSV Files"]                                      'Set filter
+  If Dialog.SaveFile() Then Return                                            'Open the dialogue and if 'Cancel' is clicked then get out of here
+  If Dialog.Path Not Ends ".csv" Then Dialog.Path &= ".csv"                   'If our new file name does not end with '.csv' then add it
+  File.Save(Dialog.Path, sSaveData)                                           'Save the file with the new data to the chosen place
+Endif
+
+If siAnswer = 2 Then                                                          'If the answer is 'Append' then..
+  Dialog.Filter = ["*.csv", "CSV Files"]                                      'Set the filter
+  If Dialog.OpenFile() Then Return                                            'Open the dialogue and if 'Cancel' is clicked then get out of here
+  sFileToAppend = File.Load(Dialog.path)                                      'Load the chosen file and store in sFileToAppend
+  If sFileToAppend Not Ends gb.NewLine Then sFileToAppend &= gb.NewLine       'If the end of the data does not have a NewLine then add one
+  sFileToAppend &= sSaveData                                                  'Add the new data to the end of the existing data
+  Kill Dialog.Path                                                            'Delete the existing file
+  File.Save(Dialog.path, sFileToAppend)                                       'Save the new file with the same name with the existing and new data
+  Message("File " & Dialog.Path & "\nAppended and saved", "OK")               'Advise the user that the job's been done
+Endif
+
+If siAnswer = 3 Then Return                                                   'If the user seletced 'Cancel' the bye bye
+
+ButtonCancel_Click(True)                                                      'Click the 'Cancel' button but avoid asking silly questions!
+
+End
+
+Public Sub ButtonAdd_Click()                                                  'The 'Add' button is clicked
+
+TextBoxString.text = Trim(TextBoxString.text)                                 'Make sure there are no odd spaces in the text
+If Right(TextBoxString.text, 1) = "," Then                                    'If the last charater is a comma then..
+  TextBoxString.text = Left(TextBoxString.text, -1)                           'Remove it!
+End If
+
+Chords.sData &= ComboboxTime.text & "," & TextBoxString.text & gb.NewLine     'Add the time and chord data to the Chord window and a Newline character
+TextBoxString.text = ""                                                       'Clear the TextBox
+
+End
+
+Public Sub ComboboxTime_Click()                                               'If the ComboBox is clicked then..
+Dim sNoteValue As String[] = ["", "semiquaver.png", "quaver.png", "", 
+  "crotchet.png", "", "", "", "minim.png"]                                    'Set up the pictures in an array
+
+PictureBoxNote.Picture = Picture.Load(sNoteValue[Val(ComboboxTime.text)])     'Apply the correct picture depending on the value in the ComboBox
+
+End
+
+Public Sub ButtonPlay_Click()                                                 'The 'Play' button is clicked
+Dim sChord As String                                                          'To store the Chord data
+Dim sTemp As String                                                           'Temp string
+Dim hSound As Sound                                                           'To store a sound
+Dim hSoundArray As New Sound[]                                                'To store an array of sounds
+
+sChord = Trim(TextBoxString.text)                                             'Trim the TextBox text and store in sChord
+If Right(sChord, 1) = "," Then sChord = Left(sChord, -1)                      'If the last charater is a comma then remove it
+
+ButtonPlay.Enabled = False                                                    'Disable the 'Play' button
+
+For Each sTemp In Split(sChord)                                               'For each note in the Label..
+  hSoundArray.add(Sound.Load("/tmp/" & Trim(sTemp) & ".wav"))                 'Add the correct note to the hSoundArray
+Next
+
+For Each hSound In hSoundArray                                                'For each sound in the array
+  hSound.Play                                                                 'Play it
+Next
+
+Wait 1                                                                        'WAIT for it!
+ButtonPlay.Enabled = True                                                     'Enable the 'Play' button
+
+End
+

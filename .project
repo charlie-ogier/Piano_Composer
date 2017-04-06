@@ -1,0 +1,18 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.9.2
+Title=Piano composer
+Startup=Composer
+Icon=icon.png
+Version=0.1.0
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.sdl2.audio
+Description="Piano composer"
+Authors="Charlie Ogier 2017"
+TabSize=2
+Language=en_US
+CreateShortcut=1
+Vendor=cogier
+Packager=1
+Tags=Example,Music

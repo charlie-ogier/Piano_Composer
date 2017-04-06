@@ -1,0 +1,150 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,109.2857,33.1429)
+  Text = ("Piano composer")
+  Icon = Picture["icon.png"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Padding = 5
+  { HBox1 HBox
+    MoveScaled(0,0,108,11)
+    Padding = 5
+    { PictureBox1 PictureBox
+      MoveScaled(0,0,7,10)
+      Stretch = True
+    }
+    { DrawingArea1 DrawingArea
+      MoveScaled(7,1,10,10)
+      Background = Color.ButtonBackground
+      Cached = True
+    }
+    { Panel1 Panel
+      MoveScaled(18,2,2,6)
+    }
+    { PictureBoxNote PictureBox
+      MoveScaled(20,0,4.2857,7)
+      Visible = False
+      Stretch = True
+    }
+    { LabelEnter Label
+      MoveScaled(24,3,14,4)
+      Font = Font["Bold,+2"]
+      Alignment = Align.Center
+    }
+    { Panel12 Panel
+      MoveScaled(59,2,2,5)
+      Expand = True
+    }
+    { LabelNote2 Label
+      MoveScaled(76,8,6,2)
+      Visible = False
+    }
+    { Panel4 VBox
+      MoveScaled(63,0,54,7)
+      { Panel5 Panel
+        MoveScaled(8,0,7,1)
+      }
+      { Panel3 HBox
+        MoveScaled(0,2,44,4)
+        { Panel2 Panel
+          MoveScaled(2,1,2,2)
+          Expand = True
+        }
+        { LabelVersion Label
+          MoveScaled(8,0,15,3)
+          Text = ("Version 0.2.0")
+        }
+        { ButtonAbout Button
+          MoveScaled(27,0,15,4)
+          ToolTip = ("About this program")
+          Text = Shortcut(("About"), "A")
+          Picture = Picture["icon:/22/help"]
+        }
+      }
+    }
+    { LabelNote Label
+      MoveScaled(90,8,6,2)
+      Visible = False
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(0,12,53,0)
+    Background = Color.Black
+  }
+  { HBox2 HBox
+    MoveScaled(0,13,108,4)
+    { ButtonStartChord Button
+      MoveScaled(0,0,12,4)
+      ToolTip = ("Start a chord recording")
+      Text = Shortcut(("Start Chord"), "S")
+    }
+    { PanelRecord HBox
+      MoveScaled(11,0,96,4)
+      Visible = False
+      Expand = True
+      { Label1 Label
+        MoveScaled(0,0,6,3)
+        Text = ("Time ")
+        Alignment = Align.Right
+      }
+      { ComboboxTime ComboBox
+        MoveScaled(7,0,7,4)
+        ToolTip = ("Sets the amount of time until\nthe next chord is played\nUse the mouse wheel to select")
+        ReadOnly = True
+        List = [("1"), ("2"), ("4"), ("8")]
+      }
+      { TextBoxString TextBox
+        MoveScaled(15,0,16,4)
+        Expand = True
+      }
+      { Panel11 Panel
+        MoveScaled(41,1,1,2)
+      }
+      { ButtonAdd Button
+        MoveScaled(43,0,10,4)
+        ToolTip = ("Adds the chord to the Chords list")
+        Text = Shortcut(("Add"), "d")
+      }
+      { Panel9 Panel
+        MoveScaled(53,1,1,2)
+      }
+      { ButtonPlay Button
+        MoveScaled(54,0,10,4)
+        ToolTip = ("Play this chord")
+        Text = Shortcut(("Play"), "P")
+      }
+      { Panel10 Panel
+        MoveScaled(64,1,1,2)
+      }
+      { ButtonClear Button
+        MoveScaled(66,0,9,4)
+        ToolTip = ("Clear the present chord only")
+        Text = Shortcut(("Clear"), "C")
+      }
+      { Panel6 Panel
+        MoveScaled(76,1,1,2)
+      }
+      { ButtonCancel Button
+        MoveScaled(77,0,9,4)
+        ToolTip = ("Cancel this list of chords")
+        Text = Shortcut(("Cancel"), "n")
+      }
+      { Panel7 Panel
+        MoveScaled(86,1,1,2)
+      }
+      { ButtonSave Button
+        MoveScaled(87,0,9,4)
+        ToolTip = ("Save chords to a new file or\namend chords to an exsiting file")
+        Text = Shortcut(("Save"), "v")
+      }
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(21,18,53,0)
+    Background = Color.Black
+  }
+  { Panel8 Panel
+    MoveScaled(37,21,9,1)
+  }
+}
