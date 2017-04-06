@@ -1,6 +1,7 @@
 ' Gambas class file
 
 '06/04/2017 Added a drawing of a stave with note position to aid note selection
+sVersion As String = "Charlie Ogier Software 2017 V0.2.0"
 
 Public Sub Form_Show()                                                        'Let's go!
 Dim sTemp As String                                                           'Temp string
@@ -18,9 +19,8 @@ For Each sTemp In Dir("../newnotes/", "*.wav")                                'F
   End If
 Next
 
-LabelVersion.text = "Version 0.2.0"                                           'Display the version number
-
 BuildPiano                                                                    'Build the piano keyboard
+DisplayName
 
 End
 
@@ -346,3 +346,55 @@ ButtonPlay.Enabled = True                                                     'E
 
 End
 
+Public Sub DisplayName()                                                      'To display my name!
+Dim sChars As String                                                          'List of randon characters
+Dim sEnd As String = sVersion                                                 'The text to end up with
+Dim siLength As Short = Len(sEnd)                                             'Caluclate the length of text
+Dim sOutPut As New String[]                                                   'Array of random text
+Dim siCount, siLoopCounter As Short                                           'Counters
+
+LabelDisplay.Visible = False                                                  'Hide this label
+DrawingAreaDisplay.Visible = True                                             'Show the DrawingArea
+
+For siLoopCounter = 1 To siLength                                             'Loop through the length of sEnd string
+  For siCount = 1 To siLength                                                 'Loop again
+    sChars &= Chr(Rand(33, 126))                                              'Add random characters to sChars
+  Next
+  For siCount = 1 To siLoopCounter                                            'Loop siLoopCounter times
+    Mid(sChars, siCount, 1) = Mid(sEnd, siCount, 1)                           'Correct the siLoopcounter character(s) in the string to match sEnd
+  Next
+  sOutPut.Add(sChars)                                                         'Store sChar in sOutPut array
+  sChars = ""                                                                 'Clear sChars
+Next
+
+For siCount = 1 To siLength - 1                                               'Loop through length of sEnd 
+  DrawingAreaDisplay.Clear                                                    'Clear the Drawing Area
+  Paint.Begin(DrawingAreaDisplay)                                             'Begin drawing
+  Paint.Font.Size = 14                                                        'Font 12
+  Paint.Brush = Paint.Color(Color.Blue)                                       'Brush colour
+  Paint.Font.name = "Liberation Serif"                                        'Font to use
+  Paint.Font.Bold = True                                                      'Text to bold
+  Paint.Text(sOutPut[siCount], 10, 0, 30, 60)                                'Draw the sOutput text
+  Paint.Fill                                                                  'Fill the text
+  Paint.end                                                                   'End draw
+  Wait 0.1                                                                    'Wait..
+Next
+
+Timer1.Start                                                                  'Start timer
+
+End
+
+Public Sub LabelDisplay_DblClick()                                            'If label is double clicked..
+
+DisplayName                                                                   'Run the 'Displayname' routine
+
+End
+
+Public Sub Timer1_Timer()                                                     'Timer
+
+DrawingAreaDisplay.Visible = False                                            'Hide the Drawing Area 
+LabelDisplay.Visible = True                                                   'Show the Label
+LabelDisplay.text = sVersion                                                  'Fill the Label with text
+Timer1.Stop                                                                   'Stop the timer
+
+End

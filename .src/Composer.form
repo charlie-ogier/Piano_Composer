@@ -41,26 +41,39 @@
       Visible = False
     }
     { Panel4 VBox
-      MoveScaled(63,0,54,7)
-      { Panel5 Panel
-        MoveScaled(8,0,7,1)
-      }
+      MoveScaled(63,0,54,11)
       { Panel3 HBox
-        MoveScaled(0,2,44,4)
-        { Panel2 Panel
-          MoveScaled(2,1,2,2)
+        MoveScaled(0,0,41,5)
+        { DrawingAreaDisplay DrawingArea
+          MoveScaled(0,0,26,5)
+          ToolTip = ("Double click me!")
+          Expand = True
+          Cached = True
+        }
+        { LabelDisplay Label
+          MoveScaled(26,1,15,2)
+          Visible = False
+          ToolTip = ("Doulble click me.\nYou know you want to!")
+          Expand = True
+          Alignment = Align.Right
+        }
+      }
+      { Panel2 HBox
+        MoveScaled(23,5,21,4)
+        { Panel13 Panel
+          MoveScaled(2,1,2,3)
           Expand = True
         }
-        { LabelVersion Label
-          MoveScaled(8,0,15,3)
-          Text = ("Version 0.2.0")
-        }
         { ButtonAbout Button
-          MoveScaled(27,0,15,4)
+          MoveScaled(6,0,15,4)
           ToolTip = ("About this program")
           Text = Shortcut(("About"), "A")
           Picture = Picture["icon:/22/help"]
         }
+      }
+      { Panel5 Panel
+        MoveScaled(5,7,7,1)
+        Expand = True
       }
     }
     { LabelNote Label
@@ -69,11 +82,11 @@
     }
   }
   { Separator2 Separator
-    MoveScaled(0,12,53,0)
+    MoveScaled(0,17,53,0)
     Background = Color.Black
   }
   { HBox2 HBox
-    MoveScaled(0,13,108,4)
+    MoveScaled(0,18,108,4)
     { ButtonStartChord Button
       MoveScaled(0,0,12,4)
       ToolTip = ("Start a chord recording")
@@ -141,10 +154,13 @@
     }
   }
   { Separator1 Separator
-    MoveScaled(21,18,53,0)
+    MoveScaled(21,23,53,0)
     Background = Color.Black
   }
   { Panel8 Panel
-    MoveScaled(37,21,9,1)
+    MoveScaled(38,27,9,1)
+  }
+  { Timer1 #Timer
+    #MoveScaled(98,22)
   }
 }
